@@ -2,7 +2,7 @@ package com.sondo65.daggerpractice.di;
 
 import com.sondo65.daggerpractice.di.main.MainModule;
 import com.sondo65.daggerpractice.di.main.MainViewModelsModule;
-import com.sondo65.daggerpractice.ui.main.acticity.MainActivity;
+import com.sondo65.daggerpractice.ui.main.activity.MainActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

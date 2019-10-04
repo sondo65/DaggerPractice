@@ -2,6 +2,7 @@ package com.sondo65.daggerpractice.ui.main.viewmodel;
 
 import android.util.Log;
 
+import com.sondo65.daggerpractice.models.Photo;
 import com.sondo65.daggerpractice.models.User;
 import com.sondo65.daggerpractice.network.main.MainApi;
 
@@ -10,18 +11,26 @@ import javax.inject.Inject;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
+
+import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
 
     private static final String TAG = "MainViewModel";
 
-    // inject
     private final MainApi mainApi;
 
-    private MediatorLiveData<User> authUser = new MediatorLiveData<>();
+    private MediatorLiveData<List<Photo>> mlistPhotos;
+
+    public LiveData<List<Photo>> getListPhotos(){
+        return mlistPhotos;
+    }
 
     @Inject
     public MainViewModel(MainApi mainApi) {
@@ -29,25 +38,23 @@ public class MainViewModel extends ViewModel {
         Log.d(TAG, "MainViewModel: viewmodel is working...");
     }
 
-    public void authenticateWithId(int userId){
-        final LiveData<User> source = LiveDataReactiveStreams.fromPublisher(
-                mainApi.getUser(userId)
-                        .subscribeOn(Schedulers.io()));
 
-        Log.d(TAG, "authenticateWithId: viewmodel is working..." + mainApi.getUser(userId).toString());
+    public void retrievePhoto(){
+        final LiveData<List<Photo>> source = LiveDataReactiveStreams.fromPublisher(
+                mainApi.getPhoto()
+                .subscribeOn(Schedulers.io())
+        );
 
-        authUser.addSource(source, new Observer<User>() {
+        mlistPhotos.addSource(source, new Observer<List<Photo>>() {
             @Override
-            public void onChanged(User user) {
-                authUser.setValue(user);
-                authUser.removeSource(source);
+            public void onChanged(List<Photo> photos) {
+                mlistPhotos.setValue(photos);
+                mlistPhotos.removeSource(source);
             }
         });
+
     }
 
-    public LiveData<User> observeUser(){
-        return authUser;
-    }
 }
 
 
